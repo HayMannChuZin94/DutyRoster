@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Duty Roster 2026 (Team1 + Team2)</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#0f1a2f;
+      --panel2:#0c162b;
+      --text:#e8eefc;
+      --muted:#a9b7d6;
+      --line:rgba(255,255,255,.08);
+      --good:#38bdf8;
+      --accent:#a78bfa;
+      --warn:#fbbf24;
+      --chip:rgba(167,139,250,.16);
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(56,189,248,.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 0%, rgba(167,139,250,.18), transparent 55%),
+        radial-gradient(900px 800px at 50% 120%, rgba(251,191,36,.10), transparent 60%),
+        var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1250px;margin:0 auto;padding:28px 18px 36px}
+    .topbar{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .title{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .title h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.2px;
+      font-weight:750;
+    }
+    .title .sub{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      max-width:860px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .controls{
+      padding:14px 14px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;
+      min-width:320px;
+    }
+    .field{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    label{
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.35px;
+      text-transform:uppercase;
+    }
+    select,input{
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 11px;
+      outline:none;
+      font-size:13px;
+      min-width:150px;
+    }
+    input[type="search"]{min-width:220px}
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(56,189,248,.14);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:650;
+      font-size:13px;
+      transition:transform .06s ease, background .18s ease, border-color .18s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{background:rgba(56,189,248,.20);border-color:rgba(56,189,248,.35)}
+    .btn:active{transform:translateY(1px)}
+    .btn.secondary{background:rgba(167,139,250,.14)}
+    .btn.secondary:hover{background:rgba(167,139,250,.20);border-color:rgba(167,139,250,.35)}
+    .btn.ghost{background:rgba(255,255,255,.04)}
+    .btn.ghost:hover{background:rgba(255,255,255,.07)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      margin:14px 0 14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .controls{justify-content:flex-start}
+      input[type="search"]{min-width:100%}
+    }
+    .panel{
+      padding:14px;
+    }
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .kpis{grid-template-columns: repeat(2, 1fr)}
+    }
+    .kpi{
+      background:rgba(0,0,0,.20);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      display:flex;flex-direction:column;gap:6px;
+      min-height:74px;
+    }
+    .kpi .k{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.2px;
+    }
+    .kpi .v{
+      font-size:18px;
+      font-weight:800;
+      display:flex;align-items:baseline;gap:8px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:12px;color:var(--muted);
+      margin-top:8px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;background:var(--good);
+      box-shadow:0 0 0 3px rgba(56,189,248,.15);
+    }
+    .dot.purple{background:var(--accent);box-shadow:0 0 0 3px rgba(167,139,250,.15)}
+    .dot.warn{background:var(--warn);box-shadow:0 0 0 3px rgba(251,191,36,.14)}
+    .listbox{
+      display:flex;flex-direction:column;gap:10px;
+    }
+    .boxTitle{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:8px;
+    }
+    .boxTitle h2{
+      margin:0;
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .boxTitle .small{
+      font-size:12px;color:var(--muted);
+    }
+    .chips{
+      display:flex;flex-wrap:wrap;gap:8px;
+      padding:10px;
+      background:rgba(0,0,0,.20);
+      border:1px solid var(--line);
+      border-radius:14px;
+    }
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:var(--chip);
+      border:1px solid rgba(167,139,250,.25);
+      font-size:12px;
+      color:var(--text);
+    }
+    .chip b{
+      font-family:var(--mono);
+      font-size:11px;
+      color:rgba(255,255,255,.9);
+      background:rgba(0,0,0,.22);
+      border:1px solid var(--line);
+      padding:3px 7px;border-radius:999px;
+    }
+
+    .tableWrap{
+      margin-top:14px;
+      overflow:hidden;
+    }
+    .tableHead{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:14px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+    }
+    .tableHead h2{
+      margin:0;font-size:14px;font-weight:850;letter-spacing:.2px;
+    }
+    .tableHead .right{
+      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      font-size:13px;
+    }
+    thead th{
+      text-align:left;
+      padding:12px 14px;
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.38px;
+      text-transform:uppercase;
+      background:rgba(0,0,0,.14);
+      border-bottom:1px solid var(--line);
+      position:sticky; top:0; z-index:2;
+      backdrop-filter: blur(8px);
+    }
+    tbody td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+    }
+    tbody tr:hover td{background:rgba(255,255,255,.03)}
+    .wk{
+      font-family:var(--mono);
+      color:rgba(255,255,255,.92);
+      font-weight:700;
+    }
+    .range{
+      color:var(--muted);
+      font-family:var(--mono);
+      font-size:12px;
+    }
+    .namePair{
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      width:fit-content;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+    }
+    .badge .t{
+      font-size:11px;text-transform:uppercase;letter-spacing:.35px;color:var(--muted);
+    }
+    .badge .n{font-weight:800}
+    .badge.team1{border-color:rgba(56,189,248,.25)}
+    .badge.team2{border-color:rgba(167,139,250,.25)}
+    .badge .miniDot{
+      width:8px;height:8px;border-radius:99px;background:var(--good);
+      box-shadow:0 0 0 3px rgba(56,189,248,.14);
+    }
+    .badge.team2 .miniDot{background:var(--accent);box-shadow:0 0 0 3px rgba(167,139,250,.14)}
+    .muted{color:var(--muted)}
+    .note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+      padding:12px 14px;
+      border-top:1px solid var(--line);
+      background:rgba(0,0,0,.12);
+    }
+    .countTable{
+      width:100%;
+      border-collapse:separate;border-spacing:0;
+      font-size:12px;
+      margin-top:10px;
+    }
+    .countTable th,.countTable td{
+      padding:10px 12px;border-bottom:1px solid var(--line);
+    }
+    .countTable th{
+      color:var(--muted);
+      text-transform:uppercase;
+      font-size:11px;letter-spacing:.35px;
+      background:rgba(0,0,0,.14);
+      position:sticky; top:0;
+    }
+    .twoCol{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 980px){.twoCol{grid-template-columns:1fr}}
+    .empty{
+      padding:18px;
+      color:var(--muted);
+    }
+
+    @media print{
+      body{background:#fff;color:#000}
+      .card, .kpi, .chips, .badge{box-shadow:none}
+      .controls,.note,.tableHead .right,#searchBox{display:none !important}
+      .wrap{max-width:none}
+      thead th{position:static}
+      .card{border:1px solid #ddd}
+      .muted,.range{color:#555}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <h1>Duty Roster — 2026</h1>
+        <div class="sub">
+          Each week assigns <b>two people</b>: <b>one from Team 1</b> and <b>one from Team 2</b>.
+          This roster uses a fair <b>round-robin rotation</b> (deduplicated names) and starts weeks on your selected start day.
+        </div>
+      </div>
+
+      <div class="controls card">
+        <div class="field">
+          <label>Year</label>
+          <select id="yearSel">
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Week starts on</label>
+          <select id="weekStartSel">
+            <option value="1" selected>Monday</option>
+            <option value="0">Sunday</option>
+            <option value="6">Saturday</option>
+          </select>
+        </div>
+
+        <div class="field" style="min-width:240px">
+          <label>Search (name / week)</label>
+          <input id="searchBox" type="search" placeholder="e.g., Min Khant, Week 12, Jan..." />
+        </div>
+
+        <button class="btn" id="regenBtn">Generate</button>
+        <button class="btn secondary" id="csvBtn">Export CSV</button>
+        <button class="btn ghost" id="printBtn">Print</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel card">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="k">Weeks generated</div>
+            <div class="v"><span id="kWeeks">—</span></div>
+            <div class="pill"><span class="dot"></span> Rotation: Team1 → Team2</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Team 1 members</div>
+            <div class="v"><span id="kT1">—</span></div>
+            <div class="pill"><span class="dot"></span> One person / week</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Team 2 members</div>
+            <div class="v"><span id="kT2">—</span></div>
+            <div class="pill"><span class="dot purple"></span> One person / week</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Fairness</div>
+            <div class="v"><span id="kFair">—</span></div>
+            <div class="pill"><span class="dot warn"></span> Counts differ by ≤ 1</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="twoCol">
+          <div>
+            <div class="boxTitle">
+              <h2>Team 1</h2>
+              <span class="small" id="t1Meta"></span>
+            </div>
+            <div class="chips" id="team1Chips"></div>
+          </div>
+
+          <div>
+            <div class="boxTitle">
+              <h2>Team 2</h2>
+              <span class="small" id="t2Meta"></span>
+            </div>
+            <div class="chips" id="team2Chips"></div>
+          </div>
+        </div>
+
+        <div class="note">
+          Notes:
+          <ul style="margin:8px 0 0 18px; padding:0">
+            <li>Names are deduplicated (e.g., repeated “Ye Aung Khant” in Team 1 becomes one entry).</li>
+            <li>Week ranges follow your selected “Week starts on” setting.</li>
+            <li>Export CSV is compatible with Excel/Google Sheets.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel card">
+        <div class="boxTitle" style="margin-bottom:10px">
+          <h2>Assignment Counts (Auto)</h2>
+          <span class="small">How many times each person is on duty in the selected year</span>
+        </div>
+
+        <div class="twoCol">
+          <div class="card" style="background:rgba(0,0,0,.18); border:1px solid var(--line); border-radius:14px; padding:10px; max-height:420px; overflow:auto">
+            <div class="muted" style="font-size:12px; margin:2px 2px 8px">Team 1 counts</div>
+            <table class="countTable" id="countT1">
+              <thead><tr><th>Name</th><th style="text-align:right">Count</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="card" style="background:rgba(0,0,0,.18); border:1px solid var(--line); border-radius:14px; padding:10px; max-height:420px; overflow:auto">
+            <div class="muted" style="font-size:12px; margin:2px 2px 8px">Team 2 counts</div>
+            <table class="countTable" id="countT2">
+              <thead><tr><th>Name</th><th style="text-align:right">Count</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="note">
+          Tip: If you want a specific person to start Week 1, just reorder the names in the JavaScript arrays.
+        </div>
+      </div>
+    </div>
+
+    <div class="tableWrap card">
+      <div class="tableHead">
+        <h2>Weekly Duty Schedule</h2>
+        <div class="right">
+          <span class="muted" id="rangeLabel"></span>
+        </div>
+      </div>
+
+      <div style="max-height:560px; overflow:auto">
+        <table id="rosterTable">
+          <thead>
+            <tr>
+              <th style="width:110px">Week</th>
+              <th style="width:220px">Date Range</th>
+              <th>Assigned</th>
+              <th style="width:220px">Quick Info</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div id="emptyState" class="empty" style="display:none">No matching rows. Try a different search.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // 1) INPUT DATA (Your teams)
+    // =========================
+    const team1Raw = [
+      "Chan Nyein Maung",
+      "Hein Wai Yan Win",
+      "Min Khant",
+      "Pyae Sone Phyo",
+      "Niang Ban Kim",
+      "Phyo Thiri Swe",
+      "Ye Aung Khant",
+      "Hay Mann Chu Zin",
+      "Myo Min Htoo",
+      "Naw Maung",
+      "San Yu Aung",
+      "Aung San oo",
+      "Ye Aung Khant",        // duplicate provided by user
+      "Hein Htet Aung"
+    ];
+
+    const team2Raw = [
+      "Kay Zin Maung",
+      "Pann Ei Phyu",
+      "Su Mon Kyaw",
+      "Than Than Soe",
+      "May Thu Zaw",
+      "Thin Yadi Aung",
+      "Lay Lay Thwe",
+      "Hnin Htet Zaw",
+      "Aung Myo San",
+      "Min Khant Ko",
+      "Yamin Khine",
+      "Win Zaw Oo",
+      "Thant Ko Zaw",
+      "Sai Nyi Nyi Pyae Sone"
+    ];
+
+    // Normalize & deduplicate (case-insensitive, trim, collapse spaces)
+    function normalizeName(n){
+      return n.trim().replace(/\s+/g,' ').replace(/\bOo\b/i,'Oo'); // small nicety
+    }
+    function dedupe(names){
+      const seen = new Map();
+      const out = [];
+      for (const n of names){
+        const nn = normalizeName(n);
+        const key = nn.toLowerCase();
+        if (!seen.has(key)){
+          seen.set(key, true);
+          // Title-case "oo" if user typed "oo"
+          out.push(nn.replace(/\boo\b/g, "Oo"));
+        }
+      }
+      return out;
+    }
+
+    const team1 = dedupe(team1Raw);
+    const team2 = dedupe(team2Raw);
+
+    // =========================
+    // 2) DATE HELPERS
+    // =========================
+    const fmt = new Intl.DateTimeFormat(undefined, { year:"numeric", month:"short", day:"2-digit" });
+    const fmtLong = new Intl.DateTimeFormat(undefined, { year:"numeric", month:"long", day:"2-digit" });
+
+    function ymd(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${da}`;
+    }
+
+    // first week start on/after Jan 1 for chosen weekStart (0=Sun ... 6=Sat)
+    function firstWeekStart(year, weekStart){
+      const d = new Date(year, 0, 1);
+      const day = d.getDay();
+      const diff = (weekStart - day + 7) % 7;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0,0,0,0);
+      return d;
+    }
+
+    function addDays(date, days){
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    // Generate all week start dates within the year (start included if within year; stop before next year)
+    function generateWeeks(year, weekStart){
+      const starts = [];
+      let cur = firstWeekStart(year, weekStart);
+
+      // If first week start is *after* Jan 1, that's fine; we begin there.
+      // Keep adding weeks while the start date is within the year.
+      while (cur.getFullYear() === year){
+        starts.push(new Date(cur));
+        cur = addDays(cur, 7);
+      }
+      return starts;
+    }
+
+    // =========================
+    // 3) ROSTER GENERATION
+    // =========================
+    function buildRoster(year, weekStart){
+      const weekStarts = generateWeeks(year, weekStart);
+      const rows = [];
+
+      for (let i=0; i<weekStarts.length; i++){
+        const start = weekStarts[i];
+        const end = addDays(start, 6);
+
+        const t1 = team1[i % team1.length];
+        const t2 = team2[i % team2.length];
+
+        rows.push({
+          weekNo: i + 1,
+          start,
+          end,
+          team1: t1,
+          team2: t2
+        });
+      }
+      return rows;
+    }
+
+    // =========================
+    // 4) UI RENDER
+    // =========================
+    const rosterTbody = document.querySelector("#rosterTable tbody");
+    const emptyState = document.getElementById("emptyState");
+    const searchBox = document.getElementById("searchBox");
+
+    function renderTeamChips(){
+      const t1 = document.getElementById("team1Chips");
+      const t2 = document.getElementById("team2Chips");
+      t1.innerHTML = "";
+      t2.innerHTML = "";
+
+      team1.forEach((n, idx)=>{
+        const el = document.createElement("div");
+        el.className = "chip";
+        el.innerHTML = `<b>${String(idx+1).padStart(2,'0')}</b> ${escapeHtml(n)}`;
+        t1.appendChild(el);
+      });
+      team2.forEach((n, idx)=>{
+        const el = document.createElement("div");
+        el.className = "chip";
+        el.style.borderColor = "rgba(56,189,248,.20)";
+        el.style.background = "rgba(56,189,248,.12)";
+        el.innerHTML = `<b>${String(idx+1).padStart(2,'0')}</b> ${escapeHtml(n)}`;
+        t2.appendChild(el);
+      });
+
+      document.getElementById("t1Meta").textContent = `${team1.length} members`;
+      document.getElementById("t2Meta").textContent = `${team2.length} members`;
+      document.getElementById("kT1").textContent = team1.length;
+      document.getElementById("kT2").textContent = team2.length;
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function renderCounts(roster){
+      const c1 = new Map(team1.map(n=>[n,0]));
+      const c2 = new Map(team2.map(n=>[n,0]));
+      roster.forEach(r=>{
+        c1.set(r.team1, (c1.get(r.team1)||0) + 1);
+        c2.set(r.team2, (c2.get(r.team2)||0) + 1);
+      });
+
+      // Fairness KPI: counts differ by <= 1 (typical for round robin)
+      function spread(map){
+        const vals = Array.from(map.values());
+        return {min: Math.min(...vals), max: Math.max(...vals)};
+      }
+      const s1 = spread(c1);
+      const s2 = spread(c2);
+      const ok = (s1.max - s1.min <= 1) && (s2.max - s2.min <= 1);
+      document.getElementById("kFair").textContent = ok ? "Balanced" : "Check";
+      document.getElementById("kWeeks").textContent = roster.length;
+
+      // Render tables
+      const tb1 = document.querySelector("#countT1 tbody");
+      const tb2 = document.querySelector("#countT2 tbody");
+      tb1.innerHTML = ""; tb2.innerHTML = "";
+
+      // Sort by count desc, then name
+      const srt = (a,b)=> (b[1]-a[1]) || a[0].localeCompare(b[0]);
+      Array.from(c1.entries()).sort(srt).forEach(([name,count])=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${escapeHtml(name)}</td><td style="text-align:right; font-family:var(--mono)">${count}</td>`;
+        tb1.appendChild(tr);
+      });
+      Array.from(c2.entries()).sort(srt).forEach(([name,count])=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${escapeHtml(name)}</td><td style="text-align:right; font-family:var(--mono)">${count}</td>`;
+        tb2.appendChild(tr);
+      });
+    }
+
+    function renderRoster(roster, filterText=""){
+      rosterTbody.innerHTML = "";
+      const q = filterText.trim().toLowerCase();
+
+      const filtered = roster.filter(r=>{
+        if (!q) return true;
+        const weekStr = `week ${r.weekNo}`.toLowerCase();
+        const dateStr = `${fmt.format(r.start)} ${fmt.format(r.end)} ${ymd(r.start)} ${ymd(r.end)}`.toLowerCase();
+        const names = `${r.team1} ${r.team2}`.toLowerCase();
+        return weekStr.includes(q) || dateStr.includes(q) || names.includes(q);
+      });
+
+      filtered.forEach(r=>{
+        const tr = document.createElement("tr");
+        const rangeShort = `${fmt.format(r.start)} → ${fmt.format(r.end)}`;
+        const rangeYmd = `${ymd(r.start)} → ${ymd(r.end)}`;
+
+        tr.innerHTML = `
+          <td class="wk">W${String(r.weekNo).padStart(2,'0')}</td>
+          <td>
+            <div>${escapeHtml(rangeShort)}</div>
+            <div class="range">${escapeHtml(rangeYmd)}</div>
+          </td>
+          <td>
+            <div class="namePair">
+              <div class="badge team1"><span class="miniDot"></span><span class="t">Team 1</span><span class="n">${escapeHtml(r.team1)}</span></div>
+              <div class="badge team2"><span class="miniDot"></span><span class="t">Team 2</span><span class="n">${escapeHtml(r.team2)}</span></div>
+            </div>
+          </td>
+          <td class="muted">
+            <div><span class="wk">${escapeHtml(ymd(r.start))}</span> start</div>
+            <div>Week ${r.weekNo} duty</div>
+          </td>
+        `;
+        rosterTbody.appendChild(tr);
+      });
+
+      emptyState.style.display = filtered.length ? "none" : "block";
+
+      // Update range label
+      if (roster.length){
+        const min = roster[0].start;
+        const max = roster[roster.length-1].end;
+        document.getElementById("rangeLabel").textContent =
+          `Covers ${fmtLong.format(min)} to ${fmtLong.format(max)} (${roster.length} weeks)`;
+      } else {
+        document.getElementById("rangeLabel").textContent = "";
+      }
+
+      return filtered;
+    }
+
+    // =========================
+    // 5) EXPORT CSV
+    // =========================
+    function rosterToCSV(rows){
+      const header = ["Year","WeekNo","WeekStart","WeekEnd","Team1","Team2"];
+      const lines = [header.join(",")];
+      rows.forEach(r=>{
+        const line = [
+          r.start.getFullYear(),
+          r.weekNo,
+          ymd(r.start),
+          ymd(r.end),
+          csvEscape(r.team1),
+          csvEscape(r.team2)
+        ].join(",");
+        lines.push(line);
+      });
+      return lines.join("\n");
+    }
+    function csvEscape(s){
+      const str = String(s);
+      if (/[",\n]/.test(str)) return `"${str.replaceAll('"','""')}"`;
+      return str;
+    }
+    function download(filename, content, mime="text/plain"){
+      const blob = new Blob([content], {type:mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================
+    // 6) WIRE UP
+    // =========================
+    let currentRoster = [];
+
+    function generateAndRender(){
+      const year = Number(document.getElementById("yearSel").value);
+      const weekStart = Number(document.getElementById("weekStartSel").value);
+
+      currentRoster = buildRoster(year, weekStart);
+
+      renderCounts(currentRoster);
+      renderRoster(currentRoster, searchBox.value);
+    }
+
+    document.getElementById("regenBtn").addEventListener("click", generateAndRender);
+
+    document.getElementById("csvBtn").addEventListener("click", ()=>{
+      const filtered = renderRoster(currentRoster, searchBox.value);
+      const csv = rosterToCSV(filtered);
+      download(`duty-roster-${document.getElementById("yearSel").value}.csv`, csv, "text/csv");
+    });
+
+    document.getElementById("printBtn").addEventListener("click", ()=> window.print());
+
+    searchBox.addEventListener("input", ()=>{
+      renderRoster(currentRoster, searchBox.value);
+    });
+
+    // Initial render
+    renderTeamChips();
+    generateAndRender();
+  </script>
+</body>
+</html>
