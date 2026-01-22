@@ -9,7 +9,7 @@ DutyRoster is a single-page web application that creates fair weekly duty rotati
 ### Features
 
 - **Fair Rotation Algorithm**: Round-robin scheduling ensures equal distribution of duties
-- **KPI Dashboard**: Displays total weeks, team member counts, and fairness metrics
+- **Key Performance Indicators (KPI) Dashboard**: Displays total weeks, team member counts, and fairness metrics
 - **Customizable Settings**: Choose year (2026-2028) and week start day (Monday/Sunday/Saturday)
 - **Real-time Search**: Filter by names, dates, or week numbers
 - **CSV Export**: Export filtered roster to spreadsheet format
@@ -160,7 +160,13 @@ In a typical .NET web application, **ASP.NET** and **ADO.NET** work together:
 // ASP.NET MVC Controller using ADO.NET
 public class ProductController : Controller
 {
-    private string connectionString = "Server=.;Database=Store;";
+    private readonly string _connectionString;
+    
+    // Connection string injected via dependency injection (best practice)
+    public ProductController(IConfiguration configuration)
+    {
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
     
     // ASP.NET handles the web request
     public IActionResult List()
@@ -168,10 +174,12 @@ public class ProductController : Controller
         List<Product> products = new List<Product>();
         
         // ADO.NET handles database access
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        using (SqlConnection conn = new SqlConnection(_connectionString))
         {
             conn.Open();
-            SqlCommand cmd = new SqlCommand("SELECT * FROM Products", conn);
+            // Specify explicit columns instead of SELECT *
+            SqlCommand cmd = new SqlCommand(
+                "SELECT Id, Name, Price FROM Products", conn);
             
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
@@ -179,9 +187,10 @@ public class ProductController : Controller
                 {
                     products.Add(new Product
                     {
-                        Id = (int)reader["Id"],
-                        Name = reader["Name"].ToString(),
-                        Price = (decimal)reader["Price"]
+                        // Use safe type conversion methods
+                        Id = reader.GetInt32(0),
+                        Name = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                        Price = reader.GetDecimal(2)
                     });
                 }
             }
@@ -203,7 +212,7 @@ public class ProductController : Controller
 #### For ADO.NET:
 - **Entity Framework (EF)**: Object-Relational Mapper (ORM) that simplifies data access
 - **Entity Framework Core**: Modern, cross-platform version
-- **Dapper**: Lightweight micro-ORM built on top of ADO.NET
+- **Dapper**: Lightweight ORM that extends ADO.NET with additional functionality for simplified data access
 
 ### Summary
 
