@@ -108,7 +108,7 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 {
     connection.Open();
     
-    string query = "SELECT * FROM Users WHERE Age > @age";
+    string query = "SELECT Id, Name, Email, Age FROM Users WHERE Age > @age";
     SqlCommand command = new SqlCommand(query, connection);
     command.Parameters.AddWithValue("@age", 18);
     
@@ -116,7 +116,12 @@ using (SqlConnection connection = new SqlConnection(connectionString))
     {
         while (reader.Read())
         {
-            Console.WriteLine($"{reader["Name"]} - {reader["Email"]}");
+            int id = reader.GetInt32(0);
+            string name = reader.IsDBNull(1) ? "" : reader.GetString(1);
+            string email = reader.IsDBNull(2) ? "" : reader.GetString(2);
+            int age = reader.GetInt32(3);
+            
+            Console.WriteLine($"{name} - {email} (Age: {age})");
         }
     }
 }
